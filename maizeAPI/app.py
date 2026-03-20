@@ -5,13 +5,35 @@ import pickle
 import pandas as pd
 import uvicorn
 
+from fastapi.middleware.cors import CORSMiddleware
+
+# ✅ Create app FIRST
 app = FastAPI()
 
+# ✅ THEN add CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ✅ Import DB + Auth
+from App.database import Base, engine
+from App.routes.auth import router as auth_router
+
+# ✅ Create tables
+Base.metadata.create_all(bind=engine)
+
+# ✅ Include auth routes
+app.include_router(auth_router)
+
+# ✅ Load ML model
 with open("final_model.pkl", "rb") as file:
-    
     model = pickle.load(file)
 
-# Pydantic model for incoming prediction data
+# ✅ Prediction schema
 class PredictionInput(BaseModel):
     Soil_Type: str
     pH: float
@@ -22,30 +44,34 @@ class PredictionInput(BaseModel):
     Planting_Date: str
     Fertilizer_Type: str
 
+# ✅ Root
 @app.get("/")
 def root():
     return {"message": "✅ Maize Yield Prediction API is running!"}
 
+# ✅ Prediction endpoint
 @app.post("/predict/")
 def predict_yield(data: PredictionInput):
     try:
-        # Convert input to DataFrame
         df = pd.DataFrame([data.dict()])
         df = pd.get_dummies(df)
 
-        # Align features with model input
         for col in model.feature_names_in_:
             if col not in df.columns:
                 df[col] = 0
+
         df = df[model.feature_names_in_]
 
-        # Predict
         predicted_yield = model.predict(df)[0]
         lower = round(predicted_yield * 0.9, 2)
         upper = round(predicted_yield * 1.1, 2)
 
-        # Determine recommendation
-        category = "High Yield" if predicted_yield > 30 else "Moderate Yield" if predicted_yield > 20 else "Low Yield"
+        category = (
+            "High Yield" if predicted_yield > 30 else
+            "Moderate Yield" if predicted_yield > 20 else
+            "Low Yield"
+        )
+
         recommendation = (
             "✅ Maintain current practices." if category == "High Yield" else
             "⚠️ Improve soil or irrigation." if category == "Moderate Yield" else
@@ -60,8 +86,9 @@ def predict_yield(data: PredictionInput):
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
+# ✅ Run server
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
