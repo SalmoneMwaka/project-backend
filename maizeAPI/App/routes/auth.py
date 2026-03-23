@@ -3,16 +3,24 @@ from App.database import SessionLocal
 from App.models.user import User
 from App.schemas.user import UserCreate, UserLogin
 from passlib.context import CryptContext
-
+import hashlib
 router = APIRouter()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str):
-    return pwd_context.hash(password)
+    # Step 1: hash with SHA-256 (removes 72-byte limit issue)
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    
+    # Step 2: hash with bcrypt
+    return pwd_context.hash(hashed)
+
 
 def verify_password(password: str, hashed: str):
-    return pwd_context.verify(password, hashed)
+    # Apply same SHA-256 before verifying
+    hashed_input = hashlib.sha256(password.encode()).hexdigest()
+    
+    return pwd_context.verify(hashed_input, hashed)
 
 @router.post("/signup")
 def signup(data: UserCreate):
