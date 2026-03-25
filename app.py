@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pickle
 import pandas as pd
-import uvicorn
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -87,8 +86,3 @@ def predict_yield(data: PredictionInput):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# ✅ Run server
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
