@@ -69,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://maizeapi-4mak.onrender.com/predict/'),
+        Uri.parse('https://project-backend-ywg7.onrender.com'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "Soil_Type": selectedSoilType,

@@ -22,7 +22,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
   bool _loading = false;
 
   // Your API URL (use local or Render URL)
-  final String apiUrl = "https://maizeapi-4mak.onrender.com/";
+  final String apiUrl = "https://project-backend-ywg7.onrender.com";
 
   Future<void> _predictYield() async {
     if (!_formKey.currentState!.validate()) return;
