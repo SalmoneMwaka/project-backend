@@ -69,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://project-backend-ywg7.onrender.com'),
+        Uri.parse('http://10.0.103.121:8000/predict/'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "Soil_Type": selectedSoilType,
@@ -81,7 +81,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           "Planting_Date": selectedPlantingDate,
           "Fertilizer_Type": selectedFertilizerType
         }),
+        
       );
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
 
       if (!mounted) return;
 

@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://10.0.65.39:8000/login/"); // 🔥 trailing slash added
+    final url = Uri.parse("http://10.0.103.121:8000/login/"); // 🔥 trailing slash added
 
     try {
       final response = await http.post(
