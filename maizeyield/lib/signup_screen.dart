@@ -28,7 +28,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://10.0.103.121:8000/signup/"); //
+    final url = Uri.parse("http://192.168.0.100:8000/signup/"); //
 
     try {
       final response = await http.post(

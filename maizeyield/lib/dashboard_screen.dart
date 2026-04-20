@@ -69,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.103.121:8000/predict/'),
+        Uri.parse('http://192.168.0.100:8000/predict/'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "Soil_Type": selectedSoilType,
